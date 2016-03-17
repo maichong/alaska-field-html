@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import ContextPure from 'material-ui/lib/mixins/context-pure';
+//import ContextPure from 'material-ui/lib/mixins/context-pure';
 import { shallowEqual } from 'alaska-admin-view';
 import Simditor from 'simditor';
 import 'simditor/styles/simditor.css';
@@ -19,7 +19,7 @@ export default class HtmlFieldView extends React.Component {
   static contextTypes = {
     muiTheme: React.PropTypes.object,
     //views: React.PropTypes.object,
-    //settings: React.PropTypes.object,
+    settings: React.PropTypes.object,
   };
   //
   //static childContextTypes = {
@@ -38,7 +38,7 @@ export default class HtmlFieldView extends React.Component {
     this.state = {
       muiTheme: context.muiTheme,
       //views: context.views,
-      //settings: context.settings,
+      settings: context.settings,
     };
   }
 
@@ -50,16 +50,19 @@ export default class HtmlFieldView extends React.Component {
   //  };
   //}
 
-  //componentWillReceiveProps(nextProps, nextContext) {
-  //  let newState = {};
-  //  if (nextContext.muiTheme) {
-  //    newState.muiTheme = nextContext.muiTheme;
-  //  }
-  //  if (nextContext.views) {
-  //    newState.views = nextContext.views;
-  //  }
-  //  this.setState(newState);
-  //}
+  componentWillReceiveProps(nextProps, nextContext) {
+    let newState = {};
+    if (nextContext.muiTheme) {
+      newState.muiTheme = nextContext.muiTheme;
+    }
+    //if (nextContext.views) {
+    //  newState.views = nextContext.views;
+    //}
+    if (nextContext.settings) {
+      newState.settings = nextContext.settings;
+    }
+    this.setState(newState);
+  }
 
   shouldComponentUpdate(props) {
     return !shallowEqual(props, this.props, 'data', 'model');
@@ -113,44 +116,24 @@ export default class HtmlFieldView extends React.Component {
 
   init() {
     if (!this._editor && this.refs.editor) {
-      let {
-        toolbar,
-        toolbarFloat,
-        toolbarFloatOffset,
-        toolbarHidden,
-        defaultImage,
-        tabIndent,
-        params,
-        upload,
-        pasteImage,
-        cleanPaste,
-        imageButton,
-        allowedTags,
-        allowedAttributes,
-        allowedStyles,
-        codeLanguages,
-        locale,
-        } = this.props;
-      if (typeof locale !== 'undefined') {
-        Simditor.locale = locale;
+      let { defaultImage, upload } = this.props.field;
+      let model = this.props.model;
+      let uploadConfig;
+      if (upload) {
+        let adminService = this.state.settings.services['alaska-admin'];
+        uploadConfig = {
+          url: `${adminService.prefix}/api/upload?service=${upload.service}&model=${upload.model}&editor=1`,
+          fileKey: 'file',
+          params: {
+            path: upload.path
+          },
+          leaveConfirm: upload.leaveConfirm
+        };
       }
       this._editor = new Simditor({
         textarea: this.refs.editor,
-        toolbar,
-        toolbarFloat,
-        toolbarFloatOffset,
-        toolbarHidden,
         defaultImage,
-        tabIndent,
-        params,
-        upload,
-        pasteImage,
-        cleanPaste,
-        imageButton,
-        allowedTags,
-        allowedAttributes,
-        allowedStyles,
-        codeLanguages
+        upload: uploadConfig
       });
       this._editor.setValue(this.props.value || '');
       this._editor.on('valuechanged', this.handleChange);
