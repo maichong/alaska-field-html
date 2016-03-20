@@ -8,7 +8,41 @@
 
 const alaska = require('alaska');
 
-exports.views = {
+class HtmlField extends alaska.Field {
+
+  createFilter(filter) {
+    let exact = true;
+    let inverse = false;
+    let value = filter;
+    if (typeof filter == 'string') {
+      value = filter.value;
+      exact = filter.exact !== false;
+      inverse = filter.inverse;
+    }
+    let result;
+
+    if (value) {
+      if (exact) {
+        result = new RegExp('^' + alaska.util.escapeRegExp(value) + '$', 'i');
+      } else {
+        result = new RegExp(alaska.util.escapeRegExp(value), 'i');
+      }
+      if (inverse) {
+        result = { $not: result };
+      }
+    } else {
+      if (inverse) {
+        result = { $nin: ['', null] };
+      } else {
+        result = { $in: ['', null] };
+      }
+    }
+    return result;
+  }
+
+}
+
+HtmlField.views = {
   cell: {
     name: 'HtmlFieldCell',
     field: __dirname + '/lib/cell.js'
@@ -19,16 +53,8 @@ exports.views = {
   }
 };
 
-exports.plain = String;
+HtmlField.plain = String;
 
-/**
- * alaska-admin-view 前端控件初始化参数
- * @param field
- * @param Model
- */
-exports.viewOptions = function (field, Model) {
-  let options = alaska.Field.viewOptions.apply(this, arguments);
-  options.upload = field.upload;
-  options.defaultImage = field.defaultImage;
-  return options;
-};
+HtmlField.viewOptions = ['upload', 'defaultImage'];
+
+module.exports = HtmlField;
