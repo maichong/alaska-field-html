@@ -5,63 +5,19 @@
  */
 
 import React from 'react';
-//import ContextPure from 'material-ui/lib/mixins/context-pure';
 import { shallowEqual } from 'alaska-admin-view';
 import Simditor from 'simditor';
 import 'simditor/styles/simditor.css';
 
 export default class HtmlFieldView extends React.Component {
 
-  //static propTypes = {
-  //  children: React.PropTypes.node
-  //};
-  //
   static contextTypes = {
-    muiTheme: React.PropTypes.object,
-    //views: React.PropTypes.object,
     settings: React.PropTypes.object,
   };
-  //
-  //static childContextTypes = {
-  //  muiTheme: React.PropTypes.object,
-  //  views: React.PropTypes.object,
-  //  settings: React.PropTypes.object,
-  //};
-  //
-  //static mixins = [
-  //  ContextPure
-  //];
 
   constructor(props, context) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.state = {
-      muiTheme: context.muiTheme,
-      //views: context.views,
-      settings: context.settings,
-    };
-  }
-
-  //getChildContext() {
-  //  return {
-  //    muiTheme: this.state.muiTheme,
-  //    views: this.context.views,
-  //    settings: this.context.settings,
-  //  };
-  //}
-
-  componentWillReceiveProps(nextProps, nextContext) {
-    let newState = {};
-    if (nextContext.muiTheme) {
-      newState.muiTheme = nextContext.muiTheme;
-    }
-    //if (nextContext.views) {
-    //  newState.views = nextContext.views;
-    //}
-    if (nextContext.settings) {
-      newState.settings = nextContext.settings;
-    }
-    this.setState(newState);
   }
 
   shouldComponentUpdate(props) {
@@ -72,47 +28,9 @@ export default class HtmlFieldView extends React.Component {
     this.init();
   }
 
-  getStyles() {
-    const muiTheme = this.state.muiTheme;
-    let floatingLabelColor = muiTheme.textField.hintColor;
-    let backgroundColor = muiTheme.textField.backgroundColor;
-    let errorColor = muiTheme.textField.errorColor;
-
-    return {
-      root: {
-        fontSize: 16,
-        lineHeight: '24px',
-        width: '100%',
-        display: 'block',
-        position: 'relative',
-        backgroundColor: backgroundColor,
-        fontFamily: muiTheme.rawTheme.fontFamily,
-        marginTop: 20
-      },
-      floatingLabel: {
-        position: 'relative',
-        color: floatingLabelColor,
-        marginBottom: 5,
-        lineHeight: '22px',
-        fontSize: '12px',
-        bottom: 'none',
-        opacity: 1,
-        cursor: 'text',
-      },
-      error: {
-        position: 'relative',
-        bottom: 5,
-        fontSize: 12,
-        lineHeight: '12px',
-        color: errorColor,
-        marginTop: 10
-      }
-    };
-  }
-
-  handleChange() {
+  handleChange = () => {
     this.props.onChange && this.props.onChange(this._editor.getValue() || '');
-  }
+  };
 
   init() {
     if (!this._editor && this.refs.editor) {
@@ -120,7 +38,7 @@ export default class HtmlFieldView extends React.Component {
       let model = this.props.model;
       let uploadConfig;
       if (upload) {
-        let adminService = this.state.settings.services['alaska-admin'];
+        let adminService = this.context.settings.services['alaska-admin'];
         uploadConfig = {
           url: `${adminService.prefix}/api/upload?service=${upload.service}&model=${upload.model}&editor=1`,
           fileKey: 'file',
@@ -147,16 +65,13 @@ export default class HtmlFieldView extends React.Component {
       } = this.props;
 
     this.init();
-    let styles = this.getStyles();
-
-    let labelElement = field.label ? (
-      <label style={styles.floatingLabel}>
-        {field.label}
-      </label>
-    ) : null;
 
     let errorTextElement = errorText ? (
-      <div style={styles.error}>{errorText}</div>
+      <p className="help-block text-danger">{errorText}</p>
+    ) : null;
+
+    let labelElement = field.label && field.label.replace(/ /g, '') ? (
+      <label className="control-label">{field.label}</label>
     ) : null;
 
     return (
