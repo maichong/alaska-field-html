@@ -66,11 +66,15 @@ export default class HtmlFieldView extends React.Component {
 
     this.init();
 
-    let errorTextElement = errorText ? (
-      <p className="help-block text-danger">{errorText}</p>
+    let helpElement = field.help ? (
+      <p className="help-block">{field.help}</p>
     ) : null;
 
-    let labelElement = field.label && field.label.replace(/ /g, '') ? (
+    let errorTextElement = errorText ? (
+      <p className="help-block"><span className="text-danger">{errorText}</span></p>
+    ) : null;
+
+    let labelElement = field.label && field.label != ' ' ? (
       <label className="control-label">{field.label}</label>
     ) : null;
 
@@ -78,6 +82,7 @@ export default class HtmlFieldView extends React.Component {
       <div>
         {labelElement}
         <textarea ref="editor"/>
+        {helpElement}
         {errorTextElement}
       </div>
     );
