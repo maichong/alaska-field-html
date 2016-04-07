@@ -55,6 +55,6 @@ HtmlField.views = {
 
 HtmlField.plain = String;
 
-HtmlField.viewOptions = ['upload', 'defaultImage'];
+HtmlField.viewOptions = ['upload', 'defaultImage', 'fullWidth', 'nolabel'];
 
 module.exports = HtmlField;

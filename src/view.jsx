@@ -35,7 +35,6 @@ export default class HtmlFieldView extends React.Component {
   init() {
     if (!this._editor && this.refs.editor) {
       let { defaultImage, upload } = this.props.field;
-      let model = this.props.model;
       let uploadConfig;
       if (upload) {
         let adminService = this.context.settings.services['alaska-admin'];
@@ -53,8 +52,10 @@ export default class HtmlFieldView extends React.Component {
         defaultImage,
         upload: uploadConfig
       });
-      this._editor.setValue(this.props.value || '');
       this._editor.on('valuechanged', this.handleChange);
+    }
+    if (this._editor && this._editor.getValue() != this.props.value) {
+      this._editor.setValue(this.props.value || '');
     }
   }
 
@@ -63,6 +64,8 @@ export default class HtmlFieldView extends React.Component {
       errorText,
       field
       } = this.props;
+
+    const fullWidth = field.fullWidth;
 
     this.init();
 
@@ -74,17 +77,31 @@ export default class HtmlFieldView extends React.Component {
       <p className="help-block"><span className="text-danger">{errorText}</span></p>
     ) : null;
 
-    let labelElement = field.label && field.label != ' ' ? (
-      <label className="control-label">{field.label}</label>
-    ) : null;
+    if (fullWidth) {
 
-    return (
-      <div>
-        {labelElement}
-        <textarea ref="editor"/>
-        {helpElement}
-        {errorTextElement}
-      </div>
-    );
+      let labelElement = field.label && !field.nolabel ? (
+        <label className="control-label">{field.label}</label>
+      ) : null;
+      return (
+        <div>
+          {labelElement}
+          <textarea ref="editor"/>
+          {helpElement}
+          {errorTextElement}
+        </div>
+      );
+    } else {
+      return (
+        <div className="form-group">
+          <label className="control-label col-xs-2">{field.label}</label>
+          <div className="col-xs-10">
+            <textarea ref="editor"/>
+            {helpElement}
+            {errorTextElement}
+          </div>
+        </div>
+      );
+    }
+
   }
 }
