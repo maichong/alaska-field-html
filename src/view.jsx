@@ -11,6 +11,16 @@ import 'simditor/styles/simditor.css';
 
 export default class HtmlFieldView extends React.Component {
 
+  static propTypes = {
+    model: React.PropTypes.object,
+    field: React.PropTypes.object,
+    data: React.PropTypes.object,
+    errorText: React.PropTypes.string,
+    disabled: React.PropTypes.bool,
+    value: React.PropTypes.string,
+    onChange: React.PropTypes.func,
+  };
+
   static contextTypes = {
     settings: React.PropTypes.object,
   };
@@ -62,46 +72,61 @@ export default class HtmlFieldView extends React.Component {
   render() {
     let {
       errorText,
-      field
+      field,
+      disabled,
+      value
       } = this.props;
 
     const fullWidth = field.fullWidth;
 
-    this.init();
+    let readonly = disabled | field.static;
 
-    let helpElement = field.help ? (
-      <p className="help-block">{field.help}</p>
-    ) : null;
+    let editor;
+    if (readonly) {
+      editor = (<div
+        dangerouslySetInnerHTML={{__html:value||''}}
+        style={{
+        padding: 10,
+        border: '2px solid #e7e9ec',
+        borderRadius: 6
+        }}
+      ></div>);
+    } else {
+      this.init();
+      editor = <textarea ref="editor"/>;
+    }
 
-    let errorTextElement = errorText ? (
-      <p className="help-block"><span className="text-danger">{errorText}</span></p>
-    ) : null;
+    let help = field.help;
+    let className = 'form-group';
+    if (errorText) {
+      className += ' has-error';
+      help = errorText;
+    }
+    let helpElement = help ? <p className="help-block">{help}</p> : null;
+
+    let label = field.nolabel ? '' : field.label;
 
     if (fullWidth) {
-
-      let labelElement = field.label && !field.nolabel ? (
-        <label className="control-label">{field.label}</label>
+      let labelElement = label ? (
+        <label className="control-label">{label}</label>
       ) : null;
       return (
-        <div>
+        <div className={className}>
           {labelElement}
-          <textarea ref="editor"/>
+          {editor}
           {helpElement}
-          {errorTextElement}
-        </div>
-      );
-    } else {
-      return (
-        <div className="form-group">
-          <label className="control-label col-xs-2">{field.label}</label>
-          <div className="col-xs-10">
-            <textarea ref="editor"/>
-            {helpElement}
-            {errorTextElement}
-          </div>
         </div>
       );
     }
 
+    return (
+      <div className={className}>
+        <label className="control-label col-sm-2">{label}</label>
+        <div className="col-sm-10">
+          {editor}
+          {helpElement}
+        </div>
+      </div>
+    );
   }
 }
