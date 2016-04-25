@@ -10,14 +10,20 @@ const alaska = require('alaska');
 
 class HtmlField extends alaska.Field {
 
+  init() {
+    if (!this.filter && this.filter !== false) {
+      this.filter = 'TextFieldFilter';
+    }
+  }
+
   createFilter(filter) {
     let exact = true;
     let inverse = false;
     let value = filter;
-    if (typeof filter == 'string') {
+    if (typeof filter === 'object') {
       value = filter.value;
-      exact = filter.exact !== false;
-      inverse = filter.inverse;
+      exact = filter.exact !== false && filter.exact !== 'false';
+      inverse = filter.inverse === true || filter.inverse === 'true';
     }
     let result;
 
