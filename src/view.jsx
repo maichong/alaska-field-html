@@ -39,7 +39,9 @@ export default class HtmlFieldView extends React.Component {
   }
 
   componentWillUnmount() {
-    this._editor.destroy();
+    if (this._editor) {
+      this._editor.destroy();
+    }
     delete this._editor;
     delete this._textarea;
   }
@@ -77,7 +79,30 @@ export default class HtmlFieldView extends React.Component {
       this._editor = new Simditor({
         textarea: this.refs.editor,
         defaultImage,
-        upload: uploadConfig
+        upload: uploadConfig,
+        toolbar: [
+          'title',
+          'bold',
+          'italic',
+          'underline',
+          'strikethrough',
+          'fontScale',
+          'color',
+          '|',
+          'ol',
+          'ul',
+          'blockquote',
+          'code',
+          'table',
+          '|',
+          'link',
+          'image',
+          '|',
+          'indent',
+          'outdent',
+          'alignment',
+          'hr'
+        ]
       });
       this._editor.on('valuechanged', this.handleChange);
     }

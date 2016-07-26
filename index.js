@@ -51,11 +51,11 @@ class HtmlField extends alaska.Field {
 HtmlField.views = {
   cell: {
     name: 'HtmlFieldCell',
-    field: __dirname + '/lib/cell.js'
+    path: __dirname + '/lib/cell.js'
   },
   view: {
     name: 'HtmlFieldView',
-    field: __dirname + '/lib/view.js'
+    path: __dirname + '/lib/view.js'
   }
 };
 
