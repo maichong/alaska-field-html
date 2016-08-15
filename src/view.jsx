@@ -9,20 +9,22 @@ import { shallowEqual } from 'alaska-admin-view';
 import Simditor from 'simditor';
 import 'simditor/styles/simditor.css';
 
+const { bool, object, func, string } = React.PropTypes;
+
 export default class HtmlFieldView extends React.Component {
 
   static propTypes = {
-    model: React.PropTypes.object,
-    field: React.PropTypes.object,
-    data: React.PropTypes.object,
-    errorText: React.PropTypes.string,
-    disabled: React.PropTypes.bool,
-    value: React.PropTypes.string,
-    onChange: React.PropTypes.func,
+    model: object,
+    field: object,
+    data: object,
+    errorText: string,
+    disabled: bool,
+    value: string,
+    onChange: func,
   };
 
   static contextTypes = {
-    settings: React.PropTypes.object,
+    settings: object,
   };
 
   constructor(props, context) {
@@ -137,7 +139,7 @@ export default class HtmlFieldView extends React.Component {
     }
 
     let help = field.help;
-    let className = 'form-group';
+    let className = 'form-group html-field';
     if (errorText) {
       className += ' has-error';
       help = errorText;
